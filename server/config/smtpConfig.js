@@ -5,10 +5,15 @@ dotenv.config();
 
 export const createTransporter = () => {
     return nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // Port 587 ke liye secure hamesha false hota hai
         auth: {
             user: process.env.GMAIL_EMAIL_ADDRESS,
-            pass: process.env.GMAIL_APP_PASSWORD
+            pass: process.env.GMAIL_APP_PASSWORD,
+        },
+        tls: {
+            rejectUnauthorized: false // Render network par Gmail connection ko block hone se rokta hai
         }
     });
 };
