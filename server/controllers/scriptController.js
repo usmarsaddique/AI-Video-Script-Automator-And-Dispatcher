@@ -25,8 +25,8 @@ export const processAutomation = async (req, res) => {
     sendLog('🚀 Started automation process...', 'success');
 
     try {
-        sendLog('⏳ Verifying SMTP Email connection...', 'info');
-        await verifyTransporter();
+        // sendLog('⏳ Verifying SMTP Email connection...', 'info');
+        // await verifyTransporter();
         sendLog('✅ SMTP connection verified. Starting AI generation...', 'success');
 
         for (const topic of topics) {
