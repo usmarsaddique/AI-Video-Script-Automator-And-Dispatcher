@@ -14,29 +14,33 @@ export const processAutomation = async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // 🔥 CRITICAL: Render par live streaming buffering band karne ke liye
 
+    // Naya sendLog function jo Render ke Dashboard par bhi logs dikhaye ga
     const sendLog = (message, status = 'info') => {
+        console.log(`[${status.toUpperCase()}] ${message}`); // 🔥 Taake Render logs mein sab nazar aaye
         res.write(`data: ${JSON.stringify({ message, status, timestamp: new Date().toISOString() })}\n\n`);
     };
 
     sendLog('🚀 Started automation process...', 'success');
 
     try {
+        sendLog('⏳ Verifying SMTP Email connection...', 'info');
         await verifyTransporter();
         sendLog('✅ SMTP connection verified. Starting AI generation...', 'success');
 
         for (const topic of topics) {
-            sendLog(`⏳ Generating script for topic: "${topic}"...`, 'info');
+            sendLog(`⏳ Generating script from Groq for topic: "${topic}"...`, 'info');
 
             try {
                 const scriptText = await generateScriptFromGroq(topic);
-                sendLog(`✅ Script generated for: "${topic}".`, 'success');
+                sendLog(`✅ Script generated successfully for: "${topic}".`, 'success');
 
                 const textForAudio = extractCleanAudioText(scriptText);
                 console.log(`\n🎙️ FINAL CLEAN TEXT FOR AUDIO:\n${textForAudio}\n`);
 
                 const audioFilePath = path.resolve(`./voiceover_${Date.now()}.mp3`);
-                sendLog(`🎙️ Generating AI Voiceover audio...`, 'info');
+                sendLog(`🎙️ Generating AI Voiceover audio file...`, 'info');
 
                 await generateAudio(textForAudio, audioFilePath);
                 sendLog(`✅ Voiceover MP3 generated successfully! Sending emails...`, 'success');
